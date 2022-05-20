@@ -14,6 +14,7 @@ from telegram.ext import (
     CallbackContext
 )
 
+
 token = "[YOUR TOKEN HERE]"
 
 # ConversationHandler stuff
@@ -112,7 +113,7 @@ def cancel(update: Update, _: CallbackContext) -> None:
 
 # Send messages to all users in usernames
 
-
+# JK, list is for Python3.5 so how do we debug this? 
 def send_attendance_messages(context: CallbackContext, usernames: list[str]) -> None:
     for username in usernames:
         chat_id = USERNAME_TO_IDS[username]
@@ -140,6 +141,8 @@ def mark_attendance(update: Update, context: CallbackContext) -> None:
     )
     update.message.reply_text("Attendance marked!")
 
+def show_attendance(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text(str(CLASS_TO_SESSION))
 
 def update_attendance_message(session: dict, username: str) -> str:
     session['message'] += '\n' + username
@@ -170,6 +173,7 @@ def main() -> None:
     # Add command handlers
     dispatcher.add_handler(CommandHandler('start', start))
     dispatcher.add_handler(CommandHandler('mark_attendance', mark_attendance))
+    dispatcher.add_handler(CommandHandler('show_attendance', show_attendance))
 
     # Add conversation handler with to start attendance session
     conv_handler = ConversationHandler(
@@ -193,4 +197,5 @@ def main() -> None:
 
 
 if __name__ == '__main__':
+    # start > start_attendance > show_attendance
     main()
