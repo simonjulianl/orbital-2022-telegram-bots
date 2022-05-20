@@ -49,13 +49,13 @@ class AttendanceSession:
 # we store it all in the program's runtime memory.
 CLASS_TO_STUDENTS = {
     "XII-A": {
-        "Azeem Vasanwala": "azeemvasanwala"
+        "Simon": "simonjulianl"
     }
 }
 STUDENTS_TO_CLASS = {}
 CLASS_TO_SESSION = {}
 USERNAME_TO_IDS = {}
-
+SESSION_TO_ATTENDANCE = {}
 
 ########################################
 ########### COMMON COMMANDS ############
@@ -133,16 +133,23 @@ def mark_attendance(update: Update, context: CallbackContext) -> None:
     classname = STUDENTS_TO_CLASS[update.message.from_user.username]
     session = json.loads(CLASS_TO_SESSION[classname])
 
+    session_chat_id = session.get('chat_id')
+    user_name = f'{update.message.from_user.first_name}' 
     context.bot.edit_message_text(
         text=update_attendance_message(
-            session, f'{update.message.from_user.first_name} {update.message.from_user.last_name}'),
-        chat_id=session['chat_id'],
+            session, user_name),
+        chat_id=session_chat_id,
         message_id=session['message_id']
     )
+
+    if SESSION_TO_ATTENDANCE.get(session_chat_id) is None:
+        SESSION_TO_ATTENDANCE[session_chat_id] = []
+
+    SESSION_TO_ATTENDANCE[session_chat_id].append(user_name)
     update.message.reply_text("Attendance marked!")
 
 def show_attendance(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text(str(CLASS_TO_SESSION))
+    update.message.reply_text(str(SESSION_TO_ATTENDANCE))
 
 def update_attendance_message(session: dict, username: str) -> str:
     session['message'] += '\n' + username
